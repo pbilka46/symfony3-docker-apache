@@ -1,0 +1,27 @@
+version: '2'
+
+services:
+  php:
+    build: docker/apache
+    ports:
+      - '8000:80'
+    volumes:
+      - ./:/var/www/html/
+    links:
+      - mysql
+
+  mysql:
+    build: docker/mysql
+    volumes:
+      - ./db:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8001:80"
+    links:
+      - mysql
+    environment:
+      PMA_HOST: mysql
