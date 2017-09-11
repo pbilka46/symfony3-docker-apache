@@ -9,6 +9,8 @@ services:
       - ./:/var/www/html/
     links:
       - mysql
+    tty: true
+    stdin_open: true
 
   mysql:
     build: docker/mysql
