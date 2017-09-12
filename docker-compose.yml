@@ -1,6 +1,21 @@
 version: '2'
 
 services:
+  traefik:
+    image: traefik
+    command: -c /dev/null --web --docker --docker.domain=docker.localhost --logLevel=DEBUG
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  whoami1:
+    image: emilevauge/whoami
+    labels:
+      - "traefik.backend=whoami"
+      - "traefik.frontend.rule=Host:whoami.docker.localhost"
+
   php:
     build: docker/apache
     ports:
@@ -9,8 +24,9 @@ services:
       - ./:/var/www/html/
     links:
       - mysql
-    tty: true
     stdin_open: true
+    labels:
+      - "traefik.frontend.rule=Host:symfony3.dev"
 
   mysql:
     build: docker/mysql
@@ -27,3 +43,5 @@ services:
       - mysql
     environment:
       PMA_HOST: mysql
+    labels:
+      - "traefik.frontend.rule=Host:phpmyadmin.dev"
